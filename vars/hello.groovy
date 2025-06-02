@@ -1,6 +1,8 @@
-def call(String imageName, String tag) {
-    docker.withRegistry('https://index.docker.io/v2/', 'docker-hub-cred') {
-        def image = docker.build("${imageName}:${tag}")
-        image.push()
+def call(String imageName, String credId) {
+    withCredentials([usernamePassword(credentialsId: credId, passwordVariable: 'Password', usernameVariable: 'Docker')]) {
+        sh '''
+        echo "$Password" | docker login -u "$Docker" --password-stdin
+        docker push ${imageName}:latest
+        '''
     }
 }
